@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = z
   .object({
@@ -49,8 +52,30 @@ function SignUpForm() {
     },
   });
 
-  const onSubmit = (values: FormValues) => {
-    console.log(values);
+  const router = useRouter();
+
+  const onSubmit = async (values: FormValues) => {
+    await authClient.signUp.email({
+      name: values.name,
+      email: values.email, // required
+      password: values.password, // required
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+
+        onError: (error) => {
+          if (error.error.code === "USER_ALREADY_EXISTS") {
+            toast.error("usuário já existe.");
+            form.setError("email", {
+              message: "Email já cadastrado",
+            });
+
+            toast.error(error.error.message);
+          }
+        },
+      },
+    });
   };
 
   return (
@@ -100,7 +125,11 @@ function SignUpForm() {
                 <FormItem>
                   <FormLabel>Senha</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite sua senha..." {...field} />
+                    <Input
+                      placeholder="Digite sua senha..."
+                      {...field}
+                      type="password"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,7 +143,11 @@ function SignUpForm() {
                 <FormItem>
                   <FormLabel>Confirme sua senha</FormLabel>
                   <FormControl>
-                    <Input placeholder="Confirme sua senha..." {...field} />
+                    <Input
+                      placeholder="Confirme sua senha..."
+                      {...field}
+                      type="password"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
