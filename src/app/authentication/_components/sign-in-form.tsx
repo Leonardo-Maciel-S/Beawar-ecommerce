@@ -1,7 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -40,8 +42,37 @@ const SignInForm = () => {
     },
   });
 
+  const router = useRouter();
+
   const onSubmit = async (values: FormValues) => {
-    console.log(values);
+    await authClient.signIn.email({
+      email: values.email, // required
+      password: values.password, // required
+      rememberMe: true,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+
+        onError: (ctx) => {
+          if (ctx.error.code === "USER_NOT_FOUND") {
+            toast.error("Usuário não encontrado.");
+            return form.setError("password", {
+              message: "Usuário não encontrado.",
+            });
+          }
+
+          if (ctx.error.code === "INVALID_EMAIL_OR_PASSWORD") {
+            toast.error("Email ou senha incorretos.");
+            return form.setError("password", {
+              message: "Email ou senha incorretos.",
+            });
+          }
+
+          toast.error(ctx.error.message);
+        },
+      },
+    });
   };
 
   return (
@@ -88,7 +119,9 @@ const SignInForm = () => {
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit">Entrar</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "carregando..." : "Entrar"}
+              </Button>
             </CardFooter>
           </form>
         </Form>
