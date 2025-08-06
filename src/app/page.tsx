@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
 
 const Home = () => {
+  const teste = ["adicionar"];
+
   return (
     <div>
-      <Button className="">Bootcamp</Button>
+      {teste.map((item) => (
+        <Button key={item}>{item}</Button>
+      ))}
     </div>
   );
 };
