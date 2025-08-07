@@ -1,6 +1,7 @@
 import { desc } from "drizzle-orm";
 import Image from "next/image";
 
+import Brands from "@/components/common/brands";
 import CategorySelect from "@/components/common/category-selector";
 import ProductsList from "@/components/common/products-list";
 import { db } from "@/db";
@@ -25,8 +26,8 @@ const Home = async () => {
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="px-5">
+      <div className="space-y-6 overflow-x-hidden">
+        <div className="space-y-6 px-5">
           <Image
             src="/banner01.png"
             alt="Leve uma vida com estilo"
@@ -36,6 +37,8 @@ const Home = async () => {
             className="h-auto w-full"
           />
         </div>
+
+        <Brands />
 
         <ProductsList title="Mais vendidos" products={products} />
 
