@@ -37,8 +37,8 @@ const Brands = () => {
               <Image
                 src={brand.imageURl}
                 alt={brand.name}
-                width={32}
-                height={32}
+                width={45}
+                height={45}
               />
             </div>
 
