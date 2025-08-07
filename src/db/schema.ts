@@ -160,6 +160,11 @@ export const shippingAddressRelations = relations(
       fields: [shippingAddressTable.userId],
       references: [userTable.id],
     }),
+
+    cart: one(cartTable, {
+      fields: [shippingAddressTable.id],
+      references: [cartTable.shippingAddressId],
+    }),
   }),
 );
 
