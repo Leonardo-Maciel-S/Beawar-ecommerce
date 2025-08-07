@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import Brands from "@/components/common/brands";
 import CategorySelect from "@/components/common/category-selector";
+import Footer from "@/components/common/footer";
 import ProductsList from "@/components/common/products-list";
 import { db } from "@/db";
 import { productTable } from "@/db/schema";
@@ -59,6 +60,8 @@ const Home = async () => {
 
         <ProductsList products={newlyCreatedProducts} title="Novos produtos" />
       </div>
+
+      <Footer />
     </>
   );
 };
