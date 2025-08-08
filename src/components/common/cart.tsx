@@ -13,6 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import CartItem from "./cart-item";
 
 const Cart = () => {
   const { data: cart, isPending: cartIsPending } = useQuery({
@@ -30,7 +31,7 @@ const Cart = () => {
         </Button>
       </SheetTrigger>
 
-      <SheetContent>
+      <SheetContent className="rounded-l-3xl">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingBag />
@@ -39,10 +40,18 @@ const Cart = () => {
           </SheetTitle>
         </SheetHeader>
 
-        <div className="px-5">
+        <div className="flex flex-col gap-8 px-5">
           {cartIsPending && <p>Carregando...</p>}
           {cart?.items.map((item) => (
-            <p key={item.id}>{item.productVariant.name}</p>
+            <CartItem
+              key={item.id}
+              id={item.id}
+              productName={item.productVariant.product.name}
+              productVariantName={item.productVariant.name}
+              productVariantUrl={item.productVariant.imageUrl}
+              productVariantPriceInCents={item.productVariant.priceInCents}
+              initialQuantity={item.quantity}
+            />
           ))}
           {cart?.items.length === 0 && (
             <p className="text-center">Sua sacola está vazia</p>
