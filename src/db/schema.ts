@@ -1,4 +1,3 @@
-import { create } from "domain";
 import { relations } from "drizzle-orm";
 import {
   boolean,
@@ -193,7 +192,7 @@ export const cartRelations = relations(cartTable, ({ one, many }) => ({
 }));
 
 export const cartItemTable = pgTable("cart_item", {
-  id: uuid().primaryKey(),
+  id: uuid().primaryKey().defaultRandom(),
   cartId: uuid("cart_id")
     .notNull()
     .references(() => cartTable.id, { onDelete: "cascade" }),
