@@ -44,13 +44,14 @@ const Cart = () => {
         <div className="flex h-full flex-col gap-8 px-6 pb-5">
           <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
             {data && data.error && <p>{data.error}</p>}
+
             <ScrollArea className="h-full">
               <div className="flex h-full flex-col gap-8">
                 {cartIsPending && <p>Carregando...</p>}
                 {data &&
                   data.cart?.items.map((item) => (
                     <CartItem
-                      key={item.id}
+                      key={item.productVariantId}
                       id={item.id}
                       productName={item.productVariant.product.name}
                       productVariantName={item.productVariant.name}

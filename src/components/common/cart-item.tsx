@@ -1,10 +1,14 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
 
+import { removeCartProduct } from "@/app/actions/remove-cart-product";
 import { formatCentsToBRL } from "@/helpers/money";
+import { queryClient } from "@/providers/react-query";
 
 import { Button } from "../ui/button";
 
@@ -26,6 +30,24 @@ const CartItem = ({
   initialQuantity,
 }: CartItemProps) => {
   const [quantity, setQuantity] = useState(initialQuantity);
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["removeCartItem"],
+    mutationFn: () =>
+      removeCartProduct({
+        cartItemId: id,
+      }),
+    onSuccess: () => {
+      toast.success("Produto removido com sucesso.");
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+    },
+
+    onError: () => {
+      toast.error("Erro inesperado, tente novamente.");
+    },
+  });
 
   const handleDecrement = () =>
     setQuantity((prev) => (prev <= 1 ? prev : prev - 1));
@@ -50,7 +72,11 @@ const CartItem = ({
             </p>
           </div>
 
-          <Button variant={"outline"}>
+          <Button
+            variant={"outline"}
+            disabled={isPending}
+            onClick={() => mutate()}
+          >
             <Trash2 size={25} />
           </Button>
         </div>
