@@ -13,7 +13,10 @@ export const getCart = async () => {
   });
 
   if (!session?.user) {
-    throw new Error("User not authenticated");
+    return {
+      cart: null,
+      error: "Faça login para visualizar a sacola.",
+    };
   }
 
   const cart = await db.query.cartTable.findFirst({
@@ -37,17 +40,25 @@ export const getCart = async () => {
     });
 
     return {
-      ...newCart,
-      items: [],
-      totalPriceInCents: 0,
+      cart: {
+        ...newCart,
+        items: [],
+        totalPriceInCents: 0,
+      },
+
+      error: null,
     };
   }
 
   return {
-    ...cart,
-    totalPriceInCents: cart.items.reduce(
-      (acc, item) => item.quantity * item.productVariant.priceInCents + acc,
-      0,
-    ),
+    cart: {
+      ...cart,
+      totalPriceInCents: cart.items.reduce(
+        (acc, item) => item.quantity * item.productVariant.priceInCents + acc,
+        0,
+      ),
+    },
+
+    error: null,
   };
 };

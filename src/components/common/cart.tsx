@@ -19,11 +19,7 @@ import {
 import CartItem from "./cart-item";
 
 const Cart = () => {
-  const {
-    data: cart,
-    isPending: cartIsPending,
-    isError,
-  } = useQuery({
+  const { data, isPending: cartIsPending } = useQuery({
     queryKey: ["cart"],
     queryFn: () => getCart(),
   });
@@ -47,36 +43,38 @@ const Cart = () => {
 
         <div className="flex h-full flex-col gap-8 px-6 pb-5">
           <div className="flex h-full max-h-full flex-col gap-5 overflow-hidden">
+            {data && data.error && <p>{data.error}</p>}
             <ScrollArea className="h-full">
               <div className="flex h-full flex-col gap-8">
                 {cartIsPending && <p>Carregando...</p>}
-                {cart?.items.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    id={item.id}
-                    productName={item.productVariant.product.name}
-                    productVariantName={item.productVariant.name}
-                    productVariantUrl={item.productVariant.imageUrl}
-                    productVariantPriceInCents={
-                      item.productVariant.priceInCents
-                    }
-                    initialQuantity={item.quantity}
-                  />
-                ))}
-                {cart?.items.length === 0 && (
+                {data &&
+                  data.cart?.items.map((item) => (
+                    <CartItem
+                      key={item.id}
+                      id={item.id}
+                      productName={item.productVariant.product.name}
+                      productVariantName={item.productVariant.name}
+                      productVariantUrl={item.productVariant.imageUrl}
+                      productVariantPriceInCents={
+                        item.productVariant.priceInCents
+                      }
+                      initialQuantity={item.quantity}
+                    />
+                  ))}
+                {data && data.cart?.items.length === 0 && (
                   <p className="text-center">Sua sacola está vazia</p>
                 )}
               </div>
             </ScrollArea>
           </div>
 
-          {cart?.items && cart?.items.length > 0 && (
+          {data && data.cart?.items && data.cart?.items.length > 0 && (
             <div className="flex flex-col gap-4">
               <Separator />
 
               <div className="flex items-center justify-between text-xs font-semibold">
                 <p>Subtotal</p>
-                <p>{formatCentsToBRL(cart?.totalPriceInCents) ?? 0}</p>
+                <p>{formatCentsToBRL(data.cart?.totalPriceInCents) ?? 0}</p>
               </div>
 
               <Separator />
@@ -90,7 +88,7 @@ const Cart = () => {
 
               <div className="flex items-center justify-between text-xs font-semibold">
                 <p>Total</p>
-                <p>{formatCentsToBRL(cart?.totalPriceInCents) ?? 0}</p>
+                <p>{formatCentsToBRL(data.cart?.totalPriceInCents) ?? 0}</p>
               </div>
 
               <Button className="rounded-full">Finalizar Compra</Button>
