@@ -32,29 +32,30 @@ const CartItem = ({
   const handleIncrement = () => setQuantity((prev) => prev + 1);
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-4">
       <Image
         src={productVariantUrl}
         alt={productName}
-        width={0}
-        height={0}
-        sizes="100vw"
-        className="h-auto w-[86px] rounded-xl"
+        width={78}
+        height={78}
+        className="rounded-xl"
       />
 
       <div className="flex-1 space-y-2">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold">{productName}</h3>
-            <p className="text-sm">{productVariantName}</p>
+            <p className="text-base font-semibold">{productName}</p>
+            <p className="text-muted-foreground medium text-xs">
+              {productVariantName}
+            </p>
           </div>
 
-          <Button variant={"outline"} className="mr-5 self-end">
+          <Button variant={"outline"}>
             <Trash2 size={25} />
           </Button>
         </div>
         <div className="flex items-end justify-between">
-          <div className="grid grid-cols-3 items-center justify-center overflow-hidden rounded-lg border">
+          <div className="grid w-[100px] grid-cols-3 items-center justify-center overflow-hidden rounded-lg border">
             <Button
               variant="ghost"
               size="sm"
@@ -77,7 +78,7 @@ const CartItem = ({
             </Button>
           </div>
 
-          <p className="text-lg font-semibold">
+          <p className="text-bases font-semibold">
             {formatCentsToBRL(productVariantPriceInCents * quantity)}
           </p>
         </div>
