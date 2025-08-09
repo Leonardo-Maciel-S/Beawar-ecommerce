@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { addCartProduct } from "@/app/actions/add-cart-product";
 import decreaseCartProductQuantity from "@/app/actions/decrease-cart-product-quantity";
 import { removeCartProduct } from "@/app/actions/remove-cart-product";
 import { formatCentsToBRL } from "@/helpers/money";
@@ -15,6 +16,7 @@ import { Button } from "../ui/button";
 
 interface CartItemProps {
   id: string;
+  productVariantId: string;
   productName: string;
   productVariantName: string;
   productVariantUrl: string;
@@ -24,6 +26,7 @@ interface CartItemProps {
 
 const CartItem = ({
   id,
+  productVariantId,
   productName,
   productVariantName,
   productVariantUrl,
@@ -67,13 +70,36 @@ const CartItem = ({
     },
   });
 
-  const handleDecrement = () => {
-    setQuantity((prev) => prev - 1);
+  const increaseCartItem = useMutation({
+    mutationKey: ["increaseCartItem"],
+    mutationFn: () =>
+      addCartProduct({
+        productVariantId: productVariantId,
+        quantity: 1,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+      toast.error("Produto adicionado");
+    },
 
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleDecrement = () => {
     decreaseCartItem.mutate();
+
+    setQuantity((prev) => prev - 1);
   };
 
-  const handleIncrement = () => setQuantity((prev) => prev + 1);
+  const handleIncrement = () => {
+    setQuantity((prev) => prev + 1);
+
+    increaseCartItem.mutate();
+  };
 
   return (
     <div className="flex items-center gap-4">
@@ -109,7 +135,6 @@ const CartItem = ({
               size="sm"
               onClick={handleDecrement}
               className="border-none"
-              disabled={decreaseCartItem.isPending}
             >
               <Minus />
             </Button>
