@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import decreaseCartProductQuantity from "@/app/actions/decrease-cart-product-quantity";
 import { removeCartProduct } from "@/app/actions/remove-cart-product";
 import { formatCentsToBRL } from "@/helpers/money";
 import { queryClient } from "@/providers/react-query";
@@ -31,7 +32,7 @@ const CartItem = ({
 }: CartItemProps) => {
   const [quantity, setQuantity] = useState(initialQuantity);
 
-  const { mutate, isPending } = useMutation({
+  const removeCartProductItem = useMutation({
     mutationKey: ["removeCartItem"],
     mutationFn: () =>
       removeCartProduct({
@@ -49,8 +50,29 @@ const CartItem = ({
     },
   });
 
-  const handleDecrement = () =>
-    setQuantity((prev) => (prev <= 1 ? prev : prev - 1));
+  const decreaseCartItem = useMutation({
+    mutationKey: ["decreaseCartItem"],
+    mutationFn: () =>
+      decreaseCartProductQuantity({
+        cartItemId: id,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+    },
+
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleDecrement = () => {
+    setQuantity((prev) => prev - 1);
+
+    decreaseCartItem.mutate();
+  };
+
   const handleIncrement = () => setQuantity((prev) => prev + 1);
 
   return (
@@ -74,8 +96,8 @@ const CartItem = ({
 
           <Button
             variant={"outline"}
-            disabled={isPending}
-            onClick={() => mutate()}
+            disabled={removeCartProductItem.isPending}
+            onClick={() => removeCartProductItem.mutate()}
           >
             <Trash2 size={25} />
           </Button>
@@ -87,7 +109,7 @@ const CartItem = ({
               size="sm"
               onClick={handleDecrement}
               className="border-none"
-              disabled={quantity <= 1}
+              disabled={decreaseCartItem.isPending}
             >
               <Minus />
             </Button>
