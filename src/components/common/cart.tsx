@@ -5,6 +5,7 @@ import { ShoppingBag } from "lucide-react";
 
 import { getCart } from "@/app/actions/get-cart";
 import { formatCentsToBRL } from "@/helpers/money";
+import { useCart } from "@/hooks/queries/user-cart";
 
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
@@ -19,10 +20,7 @@ import {
 import CartItem from "./cart-item";
 
 const Cart = () => {
-  const { data, isPending: cartIsPending } = useQuery({
-    queryKey: ["cart"],
-    queryFn: () => getCart(),
-  });
+  const { data, isPending } = useCart();
 
   return (
     <Sheet>
@@ -47,7 +45,7 @@ const Cart = () => {
 
             <ScrollArea className="h-full">
               <div className="flex h-full flex-col gap-8">
-                {cartIsPending && <p>Carregando...</p>}
+                {isPending && <p>Carregando...</p>}
                 {data &&
                   data.cart?.items.map((item) => (
                     <CartItem

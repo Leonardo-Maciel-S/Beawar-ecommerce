@@ -1,16 +1,14 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { addCartProduct } from "@/app/actions/add-cart-product";
-import decreaseCartProductQuantity from "@/app/actions/decrease-cart-product-quantity";
-import { removeCartProduct } from "@/app/actions/remove-cart-product";
 import { formatCentsToBRL } from "@/helpers/money";
-import { queryClient } from "@/providers/react-query";
+import { useDecreaseProductFromCart } from "@/hooks/mutations/use-decrease-product-from-cart";
+import { useIncreaseProductFromCart } from "@/hooks/mutations/use-increase-product-from-cart";
+import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-product-from-cart";
 
 import { Button } from "../ui/button";
 
@@ -35,70 +33,36 @@ const CartItem = ({
 }: CartItemProps) => {
   const [quantity, setQuantity] = useState(initialQuantity);
 
-  const removeCartProductItem = useMutation({
-    mutationKey: ["removeCartItem"],
-    mutationFn: () =>
-      removeCartProduct({
-        cartItemId: id,
-      }),
-    onSuccess: () => {
-      toast.success("Produto removido com sucesso.");
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-    },
+  const removeCartProductItem = useRemoveProductFromCart({ cartItemId: id });
 
-    onError: () => {
-      toast.error("Erro inesperado, tente novamente.");
-    },
+  const decreaseCartItem = useDecreaseProductFromCart({
+    cartItemId: id,
   });
 
-  const decreaseCartItem = useMutation({
-    mutationKey: ["decreaseCartItem"],
-    mutationFn: () =>
-      decreaseCartProductQuantity({
-        cartItemId: id,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-    },
-
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  const increaseCartItem = useMutation({
-    mutationKey: ["increaseCartItem"],
-    mutationFn: () =>
-      addCartProduct({
-        productVariantId: productVariantId,
-        quantity: 1,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-      toast.error("Produto adicionado");
-    },
-
-    onError: (error) => {
-      toast.error(error.message);
-    },
+  const increaseCartItem = useIncreaseProductFromCart({
+    productVariantId: productVariantId,
   });
 
   const handleDecrement = () => {
-    decreaseCartItem.mutate();
+    decreaseCartItem.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Produto removido com sucesso.");
+      },
+    });
 
-    setQuantity((prev) => prev - 1);
+    if (quantity >= 1) {
+      setQuantity((prev) => prev - 1);
+    }
   };
 
   const handleIncrement = () => {
-    setQuantity((prev) => prev + 1);
+    increaseCartItem.mutate(undefined, {
+      onSuccess: () => {
+        toast.error("Produto adicionado");
+      },
+    });
 
-    increaseCartItem.mutate();
+    setQuantity((prev) => prev + 1);
   };
 
   return (
@@ -135,6 +99,7 @@ const CartItem = ({
               size="sm"
               onClick={handleDecrement}
               className="border-none"
+              disabled={decreaseCartItem.isPending}
             >
               <Minus />
             </Button>
@@ -146,6 +111,7 @@ const CartItem = ({
               size="sm"
               onClick={handleIncrement}
               className="border-none"
+              disabled={increaseCartItem.isPending}
             >
               <Plus size={30} />
             </Button>
