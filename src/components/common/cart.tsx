@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingBag } from "lucide-react";
+import Link from "next/link";
 
 import { getCart } from "@/app/actions/get-cart";
 import { formatCentsToBRL } from "@/helpers/money";
@@ -12,6 +13,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Separator } from "../ui/separator";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
@@ -91,7 +93,11 @@ const Cart = () => {
                 <p>{formatCentsToBRL(data.cart?.totalPriceInCents) ?? 0}</p>
               </div>
 
-              <Button className="rounded-full">Finalizar Compra</Button>
+              <SheetClose asChild>
+                <Button className="rounded-full" asChild>
+                  <Link href="../cart/identification">Finalizar Compra</Link>
+                </Button>
+              </SheetClose>
             </div>
           )}
         </div>
