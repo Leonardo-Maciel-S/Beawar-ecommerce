@@ -38,7 +38,26 @@ const addressFormSchema = z.object({
 
 type AddressFormValues = z.infer<typeof addressFormSchema>;
 
-const Address = () => {
+interface AddressProps {
+  address: {
+    number: string;
+    address: string;
+    id: string;
+    userId: string;
+    email: string;
+    fullName: string;
+    cpf: string;
+    phone: string;
+    cep: string;
+    complement: string | null;
+    neighborhood: string;
+    city: string;
+    state: string;
+    createdAt: Date;
+  }[];
+}
+
+const Address = ({ address }: AddressProps) => {
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
 
   const form = useForm<AddressFormValues>({
@@ -77,7 +96,7 @@ const Address = () => {
       <CardContent>
         <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress}>
           <div className="space-y-4">
-            {addresses?.map((address) => (
+            {address?.map((address) => (
               <Card key={address.id}>
                 <CardContent>
                   <div className="flex items-center gap-3 hover:cursor-pointer">

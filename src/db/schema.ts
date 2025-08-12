@@ -8,23 +8,6 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const address = pgTable("address", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id").notNull(),
-  email: text("email").notNull(),
-  fullName: text("full_name").notNull(),
-  cpf: text("cpf").notNull(),
-  phone: text("phone").notNull(),
-  cep: text("cep").notNull(),
-  address: text("address").notNull(),
-  number: text("number").notNull(),
-  complement: text("complement"),
-  neighborhood: text("neighborhood").notNull(),
-  city: text("city").notNull(),
-  state: text("state").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -147,26 +130,22 @@ export const productVariantRelations = relations(
 );
 
 export const shippingAddressTable = pgTable("shipping_address", {
-  id: uuid().primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id, {
-      onDelete: "cascade",
-    }),
-  recipientName: text("recipient_name").notNull(),
-  street: text().notNull(),
-  number: text().notNull(),
-  complement: text(),
-  address: text().notNull(),
-  city: text().notNull(),
-  state: text().notNull(),
-  neighborhood: text().notNull(),
-  zipCode: text("zip_code").notNull(),
-  country: text().notNull(),
-  phone: text().notNull(),
-  email: text().notNull(),
-  cpfOrCnpj: text("cpf_or_cnpj").notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
+    .references(() => userTable.id),
+  email: text("email").notNull(),
+  fullName: text("full_name").notNull(),
+  cpf: text("cpf").notNull(),
+  phone: text("phone").notNull(),
+  cep: text("cep").notNull(),
+  address: text("address").notNull(),
+  number: text("number").notNull(),
+  complement: text("complement"),
+  neighborhood: text("neighborhood").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const shippingAddressRelations = relations(

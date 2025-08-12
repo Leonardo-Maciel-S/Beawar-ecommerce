@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 
 import { db } from "@/db";
-import { address } from "@/db/schema";
+import { shippingAddressTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 export async function getUserAddresses() {
@@ -20,8 +20,8 @@ export async function getUserAddresses() {
       };
     }
 
-    const userAddresses = await db.query.address.findMany({
-      where: eq(address.userId, session.user.id),
+    const userAddresses = await db.query.shippingAddressTable.findMany({
+      where: eq(shippingAddressTable.userId, session.user.id),
       orderBy: (address, { desc }) => [desc(address.createdAt)],
     });
 

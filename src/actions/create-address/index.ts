@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { address } from "@/db/schema";
+import { shippingAddressTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import { createAddressSchema } from "./schema";
@@ -27,7 +27,7 @@ export async function createAddress(data: CreateAddressData) {
 
     // Cria o endereço no banco de dados
     const [newAddress] = await db
-      .insert(address)
+      .insert(shippingAddressTable)
       .values({
         userId: session.user.id,
         email: data.email,
