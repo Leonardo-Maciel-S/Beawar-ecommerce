@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useCreateAddress } from "@/hooks/mutations/use-create-address";
 
 const addressFormSchema = z.object({
   email: z.email("Email inválido"),
@@ -56,8 +57,12 @@ const Address = () => {
     },
   });
 
-  const onSubmit = (data: AddressFormValues) => {
-    console.log(data);
+  const createAddressMutation = useCreateAddress();
+
+  const onSubmit = async (data: AddressFormValues) => {
+    await createAddressMutation.mutateAsync(data);
+    form.reset();
+    setSelectedAddress(null);
   };
 
   return (
@@ -117,17 +122,18 @@ const Address = () => {
               <FormField
                 control={form.control}
                 name="cpf"
-                render={({ field }) => (
+                render={({ field: { onChange, value, ...field } }) => (
                   <FormItem>
                     <FormLabel>CPF</FormLabel>
                     <FormControl>
                       <PatternFormat
+                        {...field}
                         customInput={Input}
                         placeholder="Digite seu CPF"
                         format="###.###.###-##"
-                        value={field.value}
-                        onValueChange={(values) => {
-                          field.onChange(values.value);
+                        value={value}
+                        onValueChange={({ formattedValue }) => {
+                          onChange(formattedValue);
                         }}
                       />
                     </FormControl>
@@ -267,8 +273,14 @@ const Address = () => {
                 )}
               />
 
-              <Button type="submit" className="w-full">
-                Salvar endereço
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={createAddressMutation.isPending}
+              >
+                {createAddressMutation.isPending
+                  ? "Salvando..."
+                  : "Salvar endereço"}
               </Button>
             </form>
           </Form>

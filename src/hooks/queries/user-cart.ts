@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getCart } from "@/app/actions/get-cart";
+import { getCart } from "@/actions/get-cart";
 
 export const getUseCartQueryKey = () => ["cart"] as const;
 

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { removeCartProduct } from "@/app/actions/remove-cart-product";
+import { removeCartProduct } from "@/actions/remove-cart-product";
 import { queryClient } from "@/providers/react-query";
 
 import { getUseCartQueryKey } from "../queries/user-cart";

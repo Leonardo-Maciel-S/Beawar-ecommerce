@@ -8,6 +8,23 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+export const address = pgTable("address", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id").notNull(),
+  email: text("email").notNull(),
+  fullName: text("full_name").notNull(),
+  cpf: text("cpf").notNull(),
+  phone: text("phone").notNull(),
+  cep: text("cep").notNull(),
+  address: text("address").notNull(),
+  number: text("number").notNull(),
+  complement: text("complement"),
+  neighborhood: text("neighborhood").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
