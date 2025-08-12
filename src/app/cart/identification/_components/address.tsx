@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCreateAddress } from "@/hooks/mutations/use-create-address";
+import { useUserAddresses } from "@/hooks/queries/use-user-addresses";
 
 const addressFormSchema = z.object({
   email: z.email("Email inválido"),
@@ -58,12 +59,15 @@ const Address = () => {
   });
 
   const createAddressMutation = useCreateAddress();
+  const { data: addresses, isLoading: isLoadingAddresses } = useUserAddresses();
 
   const onSubmit = async (data: AddressFormValues) => {
     await createAddressMutation.mutateAsync(data);
     form.reset();
     setSelectedAddress(null);
   };
+
+  console.log(selectedAddress);
 
   return (
     <Card>
@@ -72,14 +76,36 @@ const Address = () => {
       </CardHeader>
       <CardContent>
         <RadioGroup value={selectedAddress} onValueChange={setSelectedAddress}>
-          <Card>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="add_new" id="add_new" />
-                <Label htmlFor="add_new">Adicionar novo endereço</Label>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            {addresses?.map((address) => (
+              <Card key={address.id}>
+                <CardContent>
+                  <div className="flex items-center gap-3 hover:cursor-pointer">
+                    <RadioGroupItem value={address.id} id={address.id} />
+                    <Label
+                      htmlFor={address.id}
+                      className="flex items-center gap-2 font-medium text-black"
+                    >
+                      {address.address}, {address.number}
+                      {address.complement
+                        ? ` - ${address.complement}`
+                        : ""}, {address.neighborhood} - {address.city}/
+                      {address.state}, CEP: {address.cep}
+                    </Label>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            <Card>
+              <CardContent>
+                <div className="flex items-center space-x-3">
+                  <RadioGroupItem value="add_new" id="add_new" />
+                  <Label htmlFor="add_new">Adicionar novo endereço</Label>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </RadioGroup>
 
         {selectedAddress === "add_new" && (
