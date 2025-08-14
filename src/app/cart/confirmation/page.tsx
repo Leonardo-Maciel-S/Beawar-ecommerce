@@ -6,9 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/db";
 import { auth } from "@/lib/auth";
 
-import CartSummary from "../components/cart-summary";
+import CartSummary from "../_components/cart-summary";
 import { formatAddress } from "../helpers/address";
-import FinishOrderButton from "./components/finish-order-button";
+import FinishOrderButton from "./_components/finish-order-button";
 
 const ConfirmationPage = async () => {
   const session = await auth.api.getSession({
